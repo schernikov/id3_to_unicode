@@ -105,13 +105,18 @@ def convert( file_name, encoding ) :
 
 	afile = eyed3.load(file_name)
 	tag = afile.tag
+	if tag is None:
+		print ': has not tag'
+		return
 	tag.header.version = eyed3.id3.ID3_V2_3
 
 	artist = unicode2bytestring( tag.artist )
 	album = unicode2bytestring( tag.album )
 	title = unicode2bytestring( tag.title )
-
-	original = ''.join( (artist,album,title) )
+	try:
+		original = ''.join( (artist,album,title) )
+	except:
+		original = None
 
 #	artist = artist.replace( '-', '' )
 #	album = album.replace( '[+digital booklet]', '2010' )
@@ -159,12 +164,19 @@ def collect_stats( file_name ) :
 	try:
 		afile = eyed3.load(file_name)
 		tag = afile.tag
+		if tag is None:
+			print "no tag in this file: '%s'"%(file_name)
+			return
 	except Exception, e :
 		print unicode( file_name, "utf-8" ), ':', str(e)
 		return
 
 	for i in (tag.artist, tag.album, tag.title) :
-		enc = chardet.detect( unicode2bytestring( i ) )
+		try:
+			enc = chardet.detect( unicode2bytestring( i ) )
+		except Exception, e:
+			print unicode( file_name, "utf-8" ), ':', str(e)
+			return
 
 		if enc['encoding'] == 'ascii' and not overwrite_tags : continue
 
