@@ -4,7 +4,7 @@
 #
 # $Id: id3_to_unicode.py 259 2011-08-20 08:54:25Z lenik $
 
-import os, sys, argparse, shutil
+import os, sys, argparse, shutil, codecs
 
 try :
     import codecs, chardet
@@ -20,9 +20,17 @@ def main():
     parser.add_argument('-u', '--update', help='update mp3 files', action='store_true')
     parser.add_argument('-o', '--overwrite', help='overwrite tags from Artist/Album/Title directory structure', action='store_true')
     parser.add_argument('-f', '--rename', help='rename file as well', action='store_true')
+    parser.add_argument('-e', '--encoding', help='always assume this encoding')    
     parser.add_argument('location', type=str, nargs='?', default=path, help='search directory (default:%(default)s)')
 
     args = parser.parse_args()
+    
+    if args.encoding:
+        try:
+            codecs.lookup(args.encoding)
+        except:
+            print "Don't know how to deal with '%s' codec"%(args.encoding)
+            return
     
     init()
     
@@ -58,8 +66,11 @@ def process(args):
                 stats = sorted(stats, reverse=True)
                 total = sum([i[0] for i in stats]) + 0.0001
                 stats = [(i[0] * 100 / total, i[1]) for i in stats]
-    
-                encoding = select_encoding(root, stats)
+
+                if args.encoding:
+                    encoding = args.encoding
+                else:
+                    encoding = select_encoding(root, stats)
                 for fname in fset:
                     convert(args, fname, encoding)
             else :
