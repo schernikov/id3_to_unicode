@@ -4,7 +4,7 @@
 #
 # $Id: id3_to_unicode.py 259 2011-08-20 08:54:25Z lenik $
 
-import os, sys, argparse, shutil, codecs
+import os, sys, argparse, shutil
 
 try :
     import codecs, chardet
@@ -19,7 +19,8 @@ def main():
     parser.add_argument('-r', '--recursive', help='search recursively', action='store_true')
     parser.add_argument('-u', '--update', help='update mp3 files', action='store_true')
     parser.add_argument('-o', '--overwrite', help='overwrite tags from Artist/Album/Title directory structure', action='store_true')
-    parser.add_argument('-f', '--rename', help='rename file as well', action='store_true')
+    parser.add_argument('-R', '--rename', help='rename file as well', action='store_true')
+    parser.add_argument('-f', '--force', help='treat files as mp3', action='store_true')
     parser.add_argument('-e', '--encoding', help='always assume this encoding')    
     parser.add_argument('location', type=str, nargs='?', default=path, help='search directory (default:%(default)s)')
 
@@ -111,7 +112,7 @@ def make_unicode(string, encoding) :
 
 def convert(args, file_name, encoding) :
     print unicode(file_name, "utf-8"),
-    if not eyed3.mp3.isMp3File(file_name) :
+    if not eyed3.mp3.isMp3File(file_name) and not args.force:
         print ': not an MP3 file'
         return
 
@@ -166,7 +167,7 @@ def convert(args, file_name, encoding) :
     print artist, ':', album, ':', title
 
 def collect_stats(args, stats, file_name, altname) :
-    if not eyed3.mp3.isMp3File(file_name) :
+    if not eyed3.mp3.isMp3File(file_name) and not args.force:
         print unicode(altname or file_name, "utf-8"), ': not an MP3 file'
         return
 
