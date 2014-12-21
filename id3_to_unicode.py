@@ -45,6 +45,7 @@ def init():
 
 def process(args):
     try:
+        fsenc = sys.getfilesystemencoding()
         for root, dirs, files in os.walk(args.location) :
             dirs
             if not len(files) : continue
@@ -54,10 +55,10 @@ def process(args):
             for name in files:
                 if name.lower().endswith('mp3'):
                     aname = alternative(name)
-                    fn = os.path.join(root, name)
+                    fn = os.path.join(root, name).decode(fsenc)
                     collect_stats(args, stats, fn, aname)
                     if aname and aname != name and args.rename:
-                        nfn = os.path.join(root, aname)
+                        nfn = os.path.join(root, aname).decode(fsenc)
                         shutil.move(fn, nfn)
                         fn = nfn
                     fset.append(fn)
@@ -112,7 +113,7 @@ def make_unicode(string, encoding) :
 
 def convert(args, file_name, encoding) :
     print unicode(file_name, "utf-8"),
-    if not eyed3.mp3.isMp3File(file_name) and not args.force:
+    if not args.force and not eyed3.mp3.isMp3File(file_name):
         print ': not an MP3 file'
         return
 
@@ -167,7 +168,7 @@ def convert(args, file_name, encoding) :
     print artist, ':', album, ':', title
 
 def collect_stats(args, stats, file_name, altname) :
-    if not eyed3.mp3.isMp3File(file_name) and not args.force:
+    if not args.force and not eyed3.mp3.isMp3File(file_name):
         print unicode(altname or file_name, "utf-8"), ': not an MP3 file'
         return
 
