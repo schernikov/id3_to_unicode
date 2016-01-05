@@ -112,7 +112,7 @@ def make_unicode(string, encoding) :
     return string
 
 def convert(args, file_name, encoding) :
-    print file_name if (type(file_name) == unicode) else unicode(file_name, "utf-8"),
+    print unutf(file_name),
     if not args.force and not eyed3.mp3.isMp3File(file_name):
         print ': not an MP3 file'
         return
@@ -167,9 +167,12 @@ def convert(args, file_name, encoding) :
 
     print artist, ':', album, ':', title
 
+def unutf(txt):
+    return txt if (type(txt) == unicode) else unicode(txt, "utf-8")
+    
 def collect_stats(args, stats, file_name, altname) :
     if not args.force and not eyed3.mp3.isMp3File(file_name):
-        print unicode(altname or file_name, "utf-8"), ': not an MP3 file'
+        print unutf(altname or file_name), ': not an MP3 file'
         return
 
     try:
